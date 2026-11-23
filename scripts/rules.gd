@@ -91,12 +91,22 @@ func tap(p: Vector2) -> void:
 func draw_game(canvas: CanvasItem, area: Rect2) -> void:
 	label(canvas, "Tentativas: %d  Tempo: %ds" % [attempts, int(elapsed_seconds)], Vector2(area.get_center().x, area.position.y + 56), 27)
 	var board := board_rect()
-	var symbols := ["★", "♥", "●", "▲", "◆", "☀", "✿", "♣"]
+	var colors := [Color("ee7b77"), Color("f0bc43"), Color("5ab2cf"), Color("9875c7"), Color("e78e55"), Color("67b58a"), Color("d46daa"), Color("7086d7")]
 	for i in range(16):
 		var r := cell_rect(board, i % 4, i / 4, 4, 4, 7)
 		var shown := revealed[i] or matched[i]
 		canvas.draw_rect(r, Color("def5ea") if matched[i] else (Color("ffffff") if shown else ACCENT))
 		if shown:
-			label(canvas, symbols[cards[i]], r.get_center(), 49, Color("27806a") if matched[i] else INK)
+			var tint: Color = colors[cards[i]]
+			var center := r.get_center()
+			match cards[i]:
+				0: canvas.draw_circle(center, 25, tint)
+				1: canvas.draw_rect(Rect2(center - Vector2(23, 23), Vector2(46, 46)), tint)
+				2: canvas.draw_colored_polygon(PackedVector2Array([center + Vector2(0, -28), center + Vector2(27, 24), center + Vector2(-27, 24)]), tint)
+				3: canvas.draw_colored_polygon(PackedVector2Array([center + Vector2(0, -29), center + Vector2(29, 0), center + Vector2(0, 29), center + Vector2(-29, 0)]), tint)
+				4: canvas.draw_circle(center, 27, tint); canvas.draw_circle(center, 12, Color("ffffff"))
+				5: canvas.draw_rect(Rect2(center - Vector2(9, 29), Vector2(18, 58)), tint); canvas.draw_rect(Rect2(center - Vector2(29, 9), Vector2(58, 18)), tint)
+				6: canvas.draw_circle(center + Vector2(-13, -9), 16, tint); canvas.draw_circle(center + Vector2(13, -9), 16, tint); canvas.draw_colored_polygon(PackedVector2Array([center + Vector2(-27, -3), center + Vector2(27, -3), center + Vector2(0, 29)]), tint)
+				7: canvas.draw_circle(center, 25, tint); canvas.draw_circle(center + Vector2(-8, -8), 5, Color("ffffff")); canvas.draw_circle(center + Vector2(8, 9), 5, Color("ffffff"))
 		else:
 			label(canvas, "?", r.get_center(), 43, Color("ffffff"))
